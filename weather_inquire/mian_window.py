@@ -1,13 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
 from PyQt5.QtChart import QChart
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QPalette, QColor, QPainter
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QComboBox
-from inquier_weather import Ui_MainWindow
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from weather_inquire.inquier_weather import Ui_MainWindow
 import sys
 import requests
-import city_code as city_info
+from weather_inquire import city_code as city_info
+
 
 class inquire_main(QMainWindow):
     def __init__(self,parent=None):
