@@ -51,6 +51,9 @@
       <item>
        <widget class="QComboBox" name="cmb_city"/>
       </item>
+      <item>
+       <widget class="QComboBox" name="cmb_county"/>
+      </item>
      </layout>
     </item>
     <item>

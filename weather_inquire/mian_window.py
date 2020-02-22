@@ -54,33 +54,50 @@ class inquire_main(QMainWindow):
     # '台湾': ['台北', '高雄',  '桃园县', '新竹县', '苗栗县', '台中县', '彰化县', '南投县', '云林县', '嘉义县', '台南县', '高雄县', '屏东县', '宜兰县', '花莲县', '台东县', '澎湖县', '基隆', '新竹', '台中', '嘉义', '台南']
 }
         self.ui.radioButton_2.clicked.connect(self.addProviceItem)
-        self.ui.cmb_province.currentIndexChanged.connect(self.addCityItem)
-        self.inquireWeathe()
+        # self.ui.cmb_province.()
+        self.ui.cmb_province.currentTextChanged.connect(self.addCityItem)
+        self.ui.cmb_city.currentTextChanged.connect(self.addCountyItem)
+        # self.inquireWeathe()
         self.infos=city_info.getInfo()
+        #取得所有城市的值
+        self.data=city_info.get_data()
         self.ui.btn_check.clicked.connect(self.inquireInfo)
         self.ui.btn_clear.clicked.connect(lambda :self.ui.txt_info_dis.clear())
 
     def inquireInfo(self):
-        city_name=self.ui.cmb_city.currentText()
-        if city_name=='':
+        county_name=self.ui.cmb_county.currentText()
+        if county_name=='':
             self.ui.txt_info_dis.append('未设置城市，请重试！！！')
             return
-        city_code=self.infos[city_name]
-        self.inquireWeathe(city_code)
+        county_code=self.infos[county_name]
+        self.inquireWeathe(county_code)
 
     def addProviceItem(self,checked):
         if checked:
-            for addr in self.address:
-                self.ui.cmb_province.addItem(addr)
+            for province in self.data:
+                self.ui.cmb_province.addItem(province)
 
     def addCityItem(self,event):
-        print(event)
+        print('addCityItem'+str(event))
         province=self.ui.cmb_province.currentText()
         print(province)
-        citys=self.address[province]
+        citys=self.data[province]
+        self.is_cmb_city_run=True
         self.ui.cmb_city.clear()
+        self.is_cmb_city_run = False
         for city in citys:
             self.ui.cmb_city.addItem(city)
+
+    def addCountyItem(self, event):
+        # pass
+        if(not self.is_cmb_city_run):
+            print(event)
+            city = self.ui.cmb_city.currentText()
+            print(city)
+            countys = self.data[self.ui.cmb_province.currentText()][city]
+            self.ui.cmb_county.clear()
+            for county in countys:
+                self.ui.cmb_county.addItem(county)
 
     def connectSignals(self):
         self.ui.cmb_theme.currentIndexChanged.connect(self.updateUI)
@@ -140,6 +157,7 @@ class inquire_main(QMainWindow):
         result=requests.get('http://www.weather.com.cn/data/sk/{0}.html'.format(cityCode))
         result.encoding='utf-8'
         msg=result.json()['weatherinfo']
+        msg6='{0} {1} {2}'.format(self.ui.cmb_province.currentText(),self.ui.cmb_city.currentText(),self.ui.cmb_county.currentText())+'\n'
         msg0='时间：%s'%msg['time']+'\n'
         msg1='城市：%s'%msg['city']+'\n'
         msg2 = '温度：%s ℃' % msg['temp'] + '\n'
@@ -147,7 +165,7 @@ class inquire_main(QMainWindow):
         msg4 = '风力：%s' % msg['WS'] + '\n'
         msg5 = '湿度：%s' % msg['SD'] + '\n'
         print('信息来自http://www.weather.com.cn/ \n'+msg0+msg1+msg2+msg3+msg4+msg5)
-        self.ui.txt_info_dis.append('信息来自http://www.weather.com.cn/ \n'+msg0+msg1+msg2+msg3+msg4+msg5)
+        self.ui.txt_info_dis.append('信息来自http://www.weather.com.cn/ \n'+msg6+msg0+msg1+msg2+msg3+msg4+msg5)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
