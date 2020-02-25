@@ -18,7 +18,10 @@ def getHtmlText(url):
     try:
         r = requests.get(url, headers=kv, timeout=10)
         r.raise_for_status()
-        r.encoding = r.apparent_encoding
+        # r.encoding = r.apparent_encoding
+        with open('jd.html','wb') as f:
+            f.write(r.content)
+            print('jd.html Saved!')
         return r.text
     except:
         print('爬取错误')
@@ -27,7 +30,7 @@ def fillUnivList(html):
     soup = BeautifulSoup(html, 'html.parser')
     soup.prettify()
     #     print()
-    print(soup)
+    # print(soup)
     trs=soup.find('ul','gl-warp clearfix').find_all('li','gl-item')
     ulist=[]
     for tr in trs:
@@ -50,7 +53,7 @@ def fillUnivlistRex(html):
     soup = BeautifulSoup(html, 'html.parser')
     soup.prettify()
     #     print()
-    print(soup)
+    # print(soup)
     trs=soup.find('ul','gl-warp clearfix').find_all('li','gl-item')
     ulist=[]
     plt=re.findall(r'class=\"p-price\">.*?</div>',html)
@@ -80,6 +83,9 @@ def getHtmlTextWebdriver(url):
     # options.find_element_by_id("su").click()
     # res=options.get_cookies()
     # bs_val=BeautifulSoup(options.page_source)
+    with open('jd.html', 'wb') as f:
+        f.write(str(options.page_source))
+        print('jd.html Saved!')
     return options.page_source
 
 def printUnivList(ulist,num):
