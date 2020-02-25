@@ -155,17 +155,20 @@ class inquire_main(QMainWindow):
 
     def inquireWeathe(self,cityCode='101010100'):
         result=requests.get('http://www.weather.com.cn/data/sk/{0}.html'.format(cityCode))
-        result.encoding='utf-8'
-        msg=result.json()['weatherinfo']
-        msg6='{0} {1} {2}'.format(self.ui.cmb_province.currentText(),self.ui.cmb_city.currentText(),self.ui.cmb_county.currentText())+'\n'
-        msg0='时间：%s'%msg['time']+'\n'
-        msg1='城市：%s'%msg['city']+'\n'
-        msg2 = '温度：%s ℃' % msg['temp'] + '\n'
-        msg3 = '风向：%s' % msg['WD'] + '\n'
-        msg4 = '风力：%s' % msg['WS'] + '\n'
-        msg5 = '湿度：%s' % msg['SD'] + '\n'
-        print('信息来自http://www.weather.com.cn/ \n'+msg0+msg1+msg2+msg3+msg4+msg5)
-        self.ui.txt_info_dis.append('信息来自http://www.weather.com.cn/ \n'+msg6+msg0+msg1+msg2+msg3+msg4+msg5)
+        if result.status_code==200:
+            result.encoding='utf-8'
+            msg=result.json()['weatherinfo']
+            msg6='{0} {1} {2}'.format(self.ui.cmb_province.currentText(),self.ui.cmb_city.currentText(),self.ui.cmb_county.currentText())+'\n'
+            msg0='时间：%s'%msg['time']+'\n'
+            msg1='城市：%s'%msg['city']+'\n'
+            msg2 = '温度：%s ℃' % msg['temp'] + '\n'
+            msg3 = '风向：%s' % msg['WD'] + '\n'
+            msg4 = '风力：%s' % msg['WS'] + '\n'
+            msg5 = '湿度：%s' % msg['SD'] + '\n'
+            print('信息来自http://www.weather.com.cn/ \n'+msg0+msg1+msg2+msg3+msg4+msg5)
+            self.ui.txt_info_dis.append('信息来自http://www.weather.com.cn/ \n'+msg6+msg0+msg1+msg2+msg3+msg4+msg5)
+        else:
+            self.ui.txt_info_dis.append('网络错误！！！'+str(result.status_code))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
