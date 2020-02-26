@@ -7,10 +7,13 @@ https://search.jd.com/Search?keyword=%E4%B9%A6%E5%8C%85&enc=utf-8&wq=%E4%B9%A6%E
 https://search.jd.com/Search?keyword=%E4%B9%A6%E5%8C%85&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=%E4%B9%A6%E5%8C%85&stock=1&page=3&s=61&click=0
 '''
 # 最好大学排名信息爬取
+import time
+
 import bs4
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+
 # coding=utf-8
 def getHtmlText(url):
     kv = {'user-agent': 'Mozilla/5.0'}
@@ -75,17 +78,29 @@ def fillUnivlistRex(html):
     return ulist
 
 def getHtmlTextWebdriver(url):
-    options = webdriver.Chrome()
-    options.maximize_window()
-    options.get(url)
-    # options.find_element_by_id("kw").send_keys("Selenium2")
-    # options.find_element_by_id("su").click()
-    # res=options.get_cookies()
-    # bs_val=BeautifulSoup(options.page_source)
-    with open('jd.html', 'wb') as f:
-        f.write(str(options.page_source))
-        print('jd.html Saved!')
-    return options.page_source
+    driver=webdriver.Chrome()
+    driver.maximize_window()
+    driver.get(url)
+    time.sleep(5)
+    # 等待 5 秒后，判断页面是否需要登录，通过查找页面是否有相应的 DIV 的 id 来判断
+    try:
+        driver.find_element_by_id('login-box-warp')
+        a = True
+    except:
+        a = False
+    if a == True:
+        # 如果页面存在登录的 DIV，则模拟登录
+        driver.switch_to.frame('login_frame')
+        driver.find_element_by_id('switcher_plogin').click()
+        driver.find_element_by_id('u').clear()  # 选择用户名框
+        driver.find_element_by_id('u').send_keys('QQ号码')
+        driver.find_element_by_id('p').clear()
+        driver.find_element_by_id('p').send_keys('QQ密码')
+        driver.find_element_by_id('login_button').click()
+        time.sleep(3)
+    driver.implicitly_wait(3)
+    print()
+    return driver.page_source
 
 def printUnivList(ulist,num):
     # print('共有{0}个学校参加排名'.format(str(len(ulist))))
@@ -102,12 +117,11 @@ def printUnivList(ulist,num):
 def main():
     uinfo = []
     # url = 'http://www.zuihaodaxue.com/zuihaodaxuepaiming2019.html'
-    url='https:////search.jd.com/Search?keyword=书包&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=书包&stock=1&page=9&s=241&click=0'
+    url='https://s.taobao.com/search?q=%E7%AC%94%E8%AE%B0%E6%9C%AC%E7%94%B5%E8%84%91&imgfile=&js=1&stats_click=search_radio_all%3A1&initiative_id=staobaoz_20200226&ie=utf8'
     html = getHtmlTextWebdriver(url)
-    ulist=fillUnivlistRex(html=html)
-    printUnivList(ulist=ulist,num=550)
+    print(html)
+    # ulist=fillUnivlistRex(html=html)
+    # printUnivList(ulist=ulist,num=550)
 
 if __name__=='__main__':
     main()
-
-
